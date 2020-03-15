@@ -25,7 +25,7 @@ final class ScheduleElementsTests: XCTestCase
         for kind in GregorianCommonTimetable.Kind.allCases
         {
             // when
-            let generator = try! mockGregorianGenerator(of: kind, onSchedule: Set(kind.rangeOfSchduleValues), throttle: 1)
+            let generator = try! mockGregorianGenerator(of: kind, onSchedule: Set(kind.rangeOfScheduleValues), throttle: 1)
             let end = Calendar.gregorianCalendar.date(byAdding: .year, value: 2, to: refDate)!
             let dateInterval = DateInterval(start: refDate, end: end)
             
@@ -52,7 +52,7 @@ final class ScheduleElementsTests: XCTestCase
         // given
         for kind in GregorianCommonTimetable.Kind.allCases
         {
-            let timetable = try! GregorianCommonTimetable(kind: kind, onSchedule: Set(kind.rangeOfSchduleValues))
+            let timetable = try! GregorianCommonTimetable(kind: kind, onSchedule: Set(kind.rangeOfScheduleValues))
             var dcToAddForEnd = DateComponents()
             switch kind {
             case .hourlyBased:
@@ -78,7 +78,7 @@ final class ScheduleElementsTests: XCTestCase
         // given
         for kind in GregorianCommonTimetable.Kind.allCases
         {
-            let timetable = try! GregorianCommonTimetable(kind: kind, onSchedule: Set(kind.rangeOfSchduleValues))
+            let timetable = try! GregorianCommonTimetable(kind: kind, onSchedule: Set(kind.rangeOfScheduleValues))
             var dcToAddForEnd = DateComponents()
             switch kind {
             case .hourlyBased:

@@ -9,7 +9,6 @@
 import XCTest
 @testable import GregorianCommonTimetable
 import Schedule
-import Foundation
 
 final class ChopTests: XCTestCase {
     var sut: GregorianCommonTimetable!
@@ -142,7 +141,7 @@ final class ChopTests: XCTestCase {
                 }
                     let end = Calendar.gregorianCalendar.date(byAdding: dc, to: self.refDate)!
                     return {
-                        self.sut = try! GregorianCommonTimetable(kind: kind, onSchedule: Set(kind.rangeOfSchduleValues))
+                        self.sut = try! GregorianCommonTimetable(kind: kind, onSchedule: Set(kind.rangeOfScheduleValues))
                         self.dateInterval = DateInterval(start: self.refDate, end: end)
                     }
         } as [() ->Void]
