@@ -29,7 +29,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
     func givenOutOfRangeOnScheduleValues() -> [GregorianCommonTimetable.Kind : Set<Int>]
     {
         return GregorianCommonTimetable.Kind.allCases.reduce([GregorianCommonTimetable.Kind : Set<Int>]()) { partial, kind in
-            let outOfRangeValues: Set<Int> = [kind.rangeOfSchduleValues.upperBound, kind.rangeOfSchduleValues.lowerBound - 1]
+            let outOfRangeValues: Set<Int> = [kind.rangeOfScheduleValues.upperBound, kind.rangeOfScheduleValues.lowerBound - 1]
             var newResult = partial
             newResult[kind] = outOfRangeValues
             return newResult
@@ -40,7 +40,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
     {
         return GregorianCommonTimetable.Kind.allCases.reduce([GregorianCommonTimetable.Kind : Set<Int>]()) { partial, kind in
             var newResult = partial
-            newResult[kind] = Set(kind.rangeOfSchduleValues)
+            newResult[kind] = Set(kind.rangeOfScheduleValues)
             return newResult
         }
     }
@@ -111,7 +111,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
         // given
         for kind in GregorianCommonTimetable.Kind.allCases
         {
-            let range = kind.rangeOfSchduleValues
+            let range = kind.rangeOfScheduleValues
             
             // when
             let values:Set<Int> = [range.upperBound, range.lowerBound - 1]
@@ -150,7 +150,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
         // given
         for kind in GregorianCommonTimetable.Kind.allCases
         {
-            let range = kind.rangeOfSchduleValues
+            let range = kind.rangeOfScheduleValues
             
             // when
             let values = Set(range)
@@ -165,7 +165,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
         // given
         for kind in GregorianCommonTimetable.Kind.allCases
         {
-            let range = kind.rangeOfSchduleValues
+            let range = kind.rangeOfScheduleValues
             
             // when
             let values = Set(range)
@@ -255,7 +255,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
         // given
         for expectedKind in GregorianCommonTimetable.Kind.allCases
         {
-            onScheduleValues = Set(expectedKind.rangeOfSchduleValues)
+            onScheduleValues = Set(expectedKind.rangeOfScheduleValues)
             sut = try! GregorianCommonTimetable(kind: expectedKind, onSchedule: onScheduleValues)
             do {
                 let data = try encoder.encode(sut)
