@@ -144,7 +144,7 @@ final class GCTTAsyncGeneratorTests: XCTestCase {
         // given
         let whenCases: [() -> Void] = GregorianCommonTimetable.Kind.allCases
             .map {
-                let timetable = try! GregorianCommonTimetable(kind: $0, onSchedule: Set($0.rangeOfSchduleValues))
+                let timetable = try! GregorianCommonTimetable(kind: $0, onSchedule: Set($0.rangeOfScheduleValues))
                 
                 return {
                     self.kind = timetable.kind
