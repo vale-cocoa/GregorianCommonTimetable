@@ -41,3 +41,31 @@ let failingWeekdayBased = try GregorianCommonTimetable(kind: .weekdayBased, onSc
 let failingMonthBased = try GregorianCommonTimetable(kind: .monthlyBased, onSchedule: [-1, 9, 13])
 
 ```
+## Builders
+To make it easier initialization operations and storage, builder types are provided, one for kind of schedule. Convienece initializers from these types are also provided on `GregorianCommonTimetable` to obtain `Schedule` istances from them.
+
+### `GregorianHoursOfDay`
+This type provide functionalities for creation, mangement and storage of schedules based on `.hour` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `hourlyBased`.
+
+
+### `GregorianWeekdays`
+This type provide functionalities for creation, management and storage of schedules based on `.weekday` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `weekdayBased`.
+
+### `GregorianMonths`
+This type provide functionalities for creation, management and storage of schedules based on `.month` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `monthlyBased`.
+
+#### Usage example
+In the following examples some `GregorianCommonTimetable` instances are created from these builder types.
+```swift
+// A schedule which occours at 1am, 2am and 3am every day:
+let hours: GregorianHoursOfDay = [.am1, .am2, .am3]
+let hoursTimetable = GregorianCommonTimetable(hours)
+
+// A schedule which occours on Monday and Friday every week:
+let weekdays: GregorianWeekdays = [.monday, .friday]
+let weekdaysTimetable = GregorianCommonTimetable(weekdays)
+
+// A schedule which occurs on August and December every year:
+let months: GregorianMonths = [.august, .december]
+let monthsTimetable = GregorianCommonTimetable(months)
+```
