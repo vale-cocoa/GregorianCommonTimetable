@@ -8,6 +8,7 @@
 import XCTest
 @testable import GregorianCommonTimetable
 import Schedule
+import WebAPICodingOptions
 
 final class GregorianCommonTimetableTests: XCTestCase {
     var sut: GregorianCommonTimetable!
@@ -247,12 +248,120 @@ final class GregorianCommonTimetableTests: XCTestCase {
         }
     }
     
-    func test_codableConformance()
+    func test_initFromGregorianHoursOfDay() {
+        // given
+        let hours = GregorianHoursOfDay(arrayLiteral: .everyHour)
+        
+        // when
+        sut = GregorianCommonTimetable(hours)
+        
+        // then
+        XCTAssertEqual(sut.kind, GregorianCommonTimetable.Kind.hourlyBased)
+        XCTAssertEqual(sut.onScheduleValues, Set(GregorianCommonTimetable.Kind.hourlyBased.rangeOfScheduleValues))
+    }
+    
+    func test_initFromGregorianWeekdays() {
+        // given
+        let weekdays = GregorianWeekdays(arrayLiteral: .everyday)
+        
+        // when
+        sut = GregorianCommonTimetable(weekdays)
+        
+        // then
+        XCTAssertEqual(sut.kind, GregorianCommonTimetable.Kind.weekdayBased)
+        XCTAssertEqual(sut.onScheduleValues, Set(GregorianCommonTimetable.Kind.weekdayBased.rangeOfScheduleValues))
+    }
+    
+    func test_initFromGregorianMonths() {
+        // given
+        let months = GregorianMonths(arrayLiteral: .year)
+        
+        // when
+        sut = GregorianCommonTimetable(months)
+        
+        // then
+        XCTAssertEqual(sut.kind, GregorianCommonTimetable.Kind.monthlyBased)
+        XCTAssertEqual(sut.onScheduleValues, Set(GregorianCommonTimetable.Kind.monthlyBased.rangeOfScheduleValues))
+    }
+    
+    func test_rawValueOfBuilder_whenKindIsHourlyBased_returnsExpectedResult()
     {
+        // given
+        let hours = GregorianHoursOfDay(arrayLiteral: .everyHour)
+        
+        // when
+        sut = GregorianCommonTimetable(hours)
+        
+        // then
+        XCTAssertEqual(sut.rawValueOfBuilder, hours.rawValue)
+    }
+    
+    func test_rawValueOfBuilder_whenKindIsWeekdayBased_returnsExpectedResult()
+    {
+        // given
+        let weekdays = GregorianWeekdays(arrayLiteral: .everyday)
+        
+        // when
+        sut = GregorianCommonTimetable(weekdays)
+        
+        // then
+        XCTAssertEqual(sut.rawValueOfBuilder, weekdays.rawValue)
+    }
+    
+    func test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult()
+    {
+        // given
+        let months = GregorianMonths(arrayLiteral: .year)
+        
+        // when
+        sut = GregorianCommonTimetable(months)
+        
+        // then
+        XCTAssertEqual(sut.rawValueOfBuilder, months.rawValue)
+    }
+    
+    func test_onScheduleAsStrings_whenKindIsHourlyBased_returnsExpectedResult()
+    {
+        // given
+        let hours = GregorianHoursOfDay(arrayLiteral: .everyHour)
+        
+        // when
+        sut = GregorianCommonTimetable(hours)
+        
+        // then
+        XCTAssertEqual(sut.onScheduleAsStrings, hours.baseValidMembersAsStrings)
+    }
+    
+    func test_onScheduleAsStrings_whenKindIsWeekdayBased_returnsExpectedResult()
+    {
+        // given
+        let weekdays = GregorianWeekdays(arrayLiteral: .everyday)
+        
+        // when
+        sut = GregorianCommonTimetable(weekdays)
+        
+        // then
+        XCTAssertEqual(sut.onScheduleAsStrings, weekdays.baseValidMembersAsStrings)
+    }
+    
+    func test_onScheduleAsStrings_whenKindIsMonthlyBased_returnsExpectedResult()
+    {
+        // given
+        let months = GregorianMonths(arrayLiteral: .year)
+        
+        // when
+        sut = GregorianCommonTimetable(months)
+        
+        // then
+        XCTAssertEqual(sut.onScheduleAsStrings, months.baseValidMembersAsStrings)
+    }
+    
+    func test_codable()
+    {
+        // given
         let encoder = JSONEncoder()
         let decoder = JSONDecoder()
         
-        // given
         for expectedKind in GregorianCommonTimetable.Kind.allCases.shuffled()
         {
             onScheduleValues = Set(expectedKind.rangeOfScheduleValues)
@@ -268,6 +377,31 @@ final class GregorianCommonTimetableTests: XCTestCase {
         }
     }
     
+    func test_webAPI() {
+        // given
+        let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+        
+        encoder.setWebAPI(version: .v1)
+        decoder.setWebAPI(version: .v1)
+        
+        for expectedKind in GregorianCommonTimetable.Kind.allCases.shuffled()
+        {
+            onScheduleValues = Set(expectedKind.rangeOfScheduleValues)
+            sut = try! GregorianCommonTimetable(kind: expectedKind, onSchedule: onScheduleValues)
+            do {
+                let data = try encoder.encode(sut)
+                let result = try decoder.decode(GregorianCommonTimetable.self, from: data)
+                XCTAssertEqual(result.kind, expectedKind)
+                XCTAssertEqual(result.onScheduleValues, onScheduleValues)
+            } catch {
+                XCTFail("Not conforming to WEBAPICodingOptions. Error: \(error)")
+            }
+        }
+        
+        
+    }
+    
     static var allTests = [
         ("test_scheduleGenerator_whenForValuesOutOfComponentRange_throws", test_scheduleGenerator_whenForValuesOutOfComponentRange_throws),
         ("test_scheduleGenerator_whenForValuesEmpty_doesntThrows", test_scheduleGenerator_whenForValuesEmpty_doesntThrows),
@@ -279,7 +413,16 @@ final class GregorianCommonTimetableTests: XCTestCase {
         ("test_init_whenScheduleGeneratorThrows_throws", test_init_whenScheduleGeneratorThrows_throws),
         ("test_init_whenScheduleGeneratorDoesntThrow_doesntThrow", test_init_whenScheduleGeneratorDoesntThrow_doesntThrow),
         ("test_init_whenDoesntThrow_setsProperties", test_init_whenDoesntThrow_setsProperties),
-        ("test_codableConformance", test_codableConformance),
+        ("test_initFromGregorianHoursOfDay", test_initFromGregorianHoursOfDay),
+        ("test_initFromGregorianWeekdays", test_initFromGregorianWeekdays),
+        ("test_initFromGregorianMonths", test_initFromGregorianMonths),
+        ("test_rawValueOfBuilder_whenKindIsHourlyBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsHourlyBased_returnsExpectedResult),
+        ("test_rawValueOfBuilder_whenKindIsWeekdayBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsWeekdayBased_returnsExpectedResult),
+        ("test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult),
+      ("test_onScheduleAsStrings_whenKindIsHourlyBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsHourlyBased_returnsExpectedResult),
+      ("test_onScheduleAsStrings_whenKindIsWeekdayBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsWeekdayBased_returnsExpectedResult),
+      ("test_onScheduleAsStrings_whenKindIsMonthlyBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsMonthlyBased_returnsExpectedResult),
+        ("test_codable", test_codable),
         
     ]
 }
