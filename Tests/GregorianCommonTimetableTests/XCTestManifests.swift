@@ -10,7 +10,12 @@ public func allTests() -> [XCTestCaseEntry] {
         testCase(EffectiveDateIntervalTests.allTests),
         testCase(ScheduleElementsTests.allTests),
         testCase(GCTTAsyncGeneratorTests.allTests),
-        
+        testCase(GregorianHoursClampedOptionSetTests.allTests),
+        testCase(GregorianHoursCodableWebAPITests.allTests),
+        testCase(GregorianMonthsClampedOptionSetTests.allTests),
+        testCase(GregorianMonthsCodableWebAPITests.allTests),
+        testCase(GregorianWeekdaysClampedOptionSetTests.allTests),
+        testCase(GregorianWeekdaysCodableWebAPITests.allTests),
     ]
 }
 #endif

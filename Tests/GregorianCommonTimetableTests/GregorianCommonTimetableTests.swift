@@ -253,7 +253,7 @@ final class GregorianCommonTimetableTests: XCTestCase {
         let decoder = JSONDecoder()
         
         // given
-        for expectedKind in GregorianCommonTimetable.Kind.allCases
+        for expectedKind in GregorianCommonTimetable.Kind.allCases.shuffled()
         {
             onScheduleValues = Set(expectedKind.rangeOfScheduleValues)
             sut = try! GregorianCommonTimetable(kind: expectedKind, onSchedule: onScheduleValues)

@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import WebAPICodingOptions
 
 extension GregorianCommonTimetable: Codable
 {
-    private enum Base: String, Codable {
+    fileprivate enum Base: String, Codable {
         case months
         case weekdays
         case hours
@@ -45,18 +46,66 @@ extension GregorianCommonTimetable: Codable
     }
     
     public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let base = try container.decode(Base.self, forKey: .base)
-        let kind = base.toKind()
-        let onSchedule = try container.decode(Set<Int>.self, forKey: .schedule)
-        self = try Self.init(kind: kind, onSchedule: onSchedule)
+        if
+            let codingOptions = decoder.userInfo[WebAPICodingOptions.key] as? WebAPICodingOptions
+        {
+            switch codingOptions.version {
+            case .v1:
+                let webInstance = try _WebAPIGregorianCommonTimeTable(from: decoder)
+                self = try Self(webInstance)
+            }
+        } else {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let base = try container.decode(Base.self, forKey: .base)
+            let kind = base.toKind()
+            let onSchedule = try container.decode(Set<Int>.self, forKey: .schedule)
+            self = try Self.init(kind: kind, onSchedule: onSchedule)
+        }
     }
     
     public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        let base = Base(from: kind)
-        try container.encode(base, forKey: .base)
-        try container.encode(onScheduleValues, forKey: .schedule)
+        if let codingOptions = encoder.userInfo[WebAPICodingOptions.key] as? WebAPICodingOptions {
+            switch codingOptions.version {
+            case .v1:
+                let webInstance = _WebAPIGregorianCommonTimeTable(self)
+                try webInstance.encode(to: encoder)
+            }
+        } else {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            let base = Base(from: kind)
+            try container.encode(base, forKey: .base)
+            try container.encode(onScheduleValues, forKey: .schedule)
+        }
+    }
+    
+    fileprivate init (_ webInstance: _WebAPIGregorianCommonTimeTable) throws
+    {
+        if let hours = try? GregorianHoursOfDay(strings: webInstance.schedule)
+        {
+            self = Self(hours)
+        } else if
+            let weekdays = try? GregorianWeekdays(strings: webInstance.schedule)
+        {
+            self = Self(weekdays)
+        } else if
+            let months = try? GregorianMonths(strings: webInstance.schedule)
+        {
+            self = Self(months)
+        } else {
+            throw WebAPICodingOptions.Error
+                .invalidDecodedValues("Couldn't decode a valid GregorianCommonTimetable instance from \(dump(webInstance))")
+        }
+    }
+    
+}
+
+fileprivate struct _WebAPIGregorianCommonTimeTable: Codable
+{
+    let schedule: [String]
+    
+    init(_ timetable: GregorianCommonTimetable)
+    {
+        self.schedule = timetable.onScheduleAsStrings
     }
     
 }

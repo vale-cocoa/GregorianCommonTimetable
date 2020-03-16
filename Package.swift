@@ -29,6 +29,6 @@ let package = Package(
             dependencies: ["Schedule", "VDLCalendarUtilities", "VDLGCDHelpers", "ClampedOptionSet", "WebAPICodingOptions"]),
         .testTarget(
             name: "GregorianCommonTimetableTests",
-            dependencies: ["GregorianCommonTimetable"]),
+            dependencies: ["GregorianCommonTimetable", "WebAPICodingOptions"]),
     ]
 )

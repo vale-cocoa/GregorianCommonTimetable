@@ -49,4 +49,20 @@ extension GregorianCommonTimetable {
         }
     }
     
+    var onScheduleAsStrings: [String] {
+        guard !onScheduleValues.isEmpty else { return [] }
+        
+        switch self.kind {
+        case .hourlyBased:
+            let hours = GregorianHoursOfDay(rawValue: rawValueOfBuilder)
+            return hours.baseValidMembersAsStrings
+        case .weekdayBased:
+            let weekdays = GregorianWeekdays(rawValue: rawValueOfBuilder)
+            return weekdays.baseValidMembersAsStrings
+        case .monthlyBased:
+            let months = GregorianMonths(rawValue: rawValueOfBuilder)
+            return months.baseValidMembersAsStrings
+        }
+    }
+    
 }
