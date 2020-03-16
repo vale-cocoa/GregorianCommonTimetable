@@ -52,7 +52,7 @@ final class MockGregorianHours {
     }
     
     init(_ hours: UInt...) {
-        var _hours = GregorianHours()
+        var _hours = GregorianHoursOfDay()
         for hour in hours {
             let new = GregorianHoursOfDay(rawValue: hour)
             _hours.insert(new)
@@ -63,12 +63,12 @@ final class MockGregorianHours {
     
     init(randomly: Bool) {
         guard randomly == true else {
-            self.hours = GregorianHours()
+            self.hours = GregorianHoursOfDay()
             
             return
         }
         
-        var _hours = GregorianHours()
+        var _hours = GregorianHoursOfDay()
         let countOfScheduledHours = Int.random(in: 0...24)
         
         for _ in 0..<countOfScheduledHours {

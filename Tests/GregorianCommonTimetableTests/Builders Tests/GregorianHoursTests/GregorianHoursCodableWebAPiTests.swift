@@ -46,7 +46,7 @@ final class GregorianHoursCodableWebAPITests: XCTestCase {
         let data = try! encoder.encode(self.sut.hours)
         
         // then
-        XCTAssertNoThrow(try decoder.decode(GregorianHours.self, from: data))
+        XCTAssertNoThrow(try decoder.decode(GregorianHoursOfDay.self, from: data))
     }
     
     func testWebAPI_Decode_NoThrow() {
@@ -60,7 +60,7 @@ final class GregorianHoursCodableWebAPITests: XCTestCase {
         let data = try! encoder.encode(self.sut.hours)
         
         // then
-        XCTAssertNoThrow(try decoder.decode(GregorianHours.self, from: data))
+        XCTAssertNoThrow(try decoder.decode(GregorianHoursOfDay.self, from: data))
     }
     
     func testCodable_EncodeDecode() {
@@ -70,7 +70,7 @@ final class GregorianHoursCodableWebAPITests: XCTestCase {
         
         // when
         let data = try! encoder.encode(self.sut.hours)
-        let result = try! decoder.decode(GregorianHours.self, from: data)
+        let result = try! decoder.decode(GregorianHoursOfDay.self, from: data)
         
         // then
         XCTAssertEqual(self.sut.hours, result)
@@ -85,7 +85,7 @@ final class GregorianHoursCodableWebAPITests: XCTestCase {
         
         // when
         let data = try! encoder.encode(self.sut.hours)
-        let result = try! decoder.decode(GregorianHours.self, from: data)
+        let result = try! decoder.decode(GregorianHoursOfDay.self, from: data)
         
         // then
         XCTAssertEqual(self.sut.hours, result)

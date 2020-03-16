@@ -26,7 +26,7 @@ final class MockGregorianWeekdays {
     var inDates: [Date] {
         var dates = [Date]()
         var refDate = Date(timeIntervalSinceReferenceDate: 0)
-        for i in 1...6 {
+        for _ in 1...6 {
             let weekday = Calendar.gregorianCalendar.component(.weekday, from: refDate)
             if containedWeekdays[weekday - 1] == true {
                 dates.append(refDate)
@@ -40,7 +40,7 @@ final class MockGregorianWeekdays {
     var outDates: [Date] {
         var dates = [Date]()
         var refDate = Date(timeIntervalSinceReferenceDate: 0)
-        for i in 1...6 {
+        for _ in 1...6 {
             let weekday = Calendar.gregorianCalendar.component(.weekday, from: refDate)
             if containedWeekdays[weekday - 1] == false {
                 dates.append(refDate)
