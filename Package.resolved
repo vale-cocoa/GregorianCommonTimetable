@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "ClampedOptionSet",
+        "repositoryURL": "https://github.com/vale-cocoa/ClampedOptionSet.git",
+        "state": {
+          "branch": null,
+          "revision": "4c4a092e3bdc9e303780c5aee047ff6ee4da3a85",
+          "version": "1.0.1"
+        }
+      },
+      {
         "package": "Schedule",
         "repositoryURL": "https://github.com/vale-cocoa/Schedule.git",
         "state": {
@@ -26,6 +35,15 @@
           "branch": null,
           "revision": "edf9c4aa043f5c9c49eb4151d5a9bd098f46591a",
           "version": "1.0.2"
+        }
+      },
+      {
+        "package": "WebAPICodingOptions",
+        "repositoryURL": "https://github.com/vale-cocoa/WebAPICodingOptions.git",
+        "state": {
+          "branch": null,
+          "revision": "708e8745540c567a9e3904dbc687d6b567739b47",
+          "version": "1.2.0"
         }
       }
     ]
