@@ -69,10 +69,10 @@ final class EffectiveDateIntervalTests: XCTestCase {
     func test_whenDateIntervalStartAndEndMatchElementsStartEnd_returnsSameDateInterval()
     {
         // given
-        let orderedCompValues = Array(sut.onScheduleValues)
+        let sorted = Array(sut.onScheduleValues)
             .sorted(by: <)
-        let firstOnDate = Calendar.gregorianCalendar.date(bySetting: sut.kind.component, value: orderedCompValues.first!, of: refDate)!
-        let lastOnDate = Calendar.gregorianCalendar.date(bySetting: sut.kind.component, value: orderedCompValues.last!, of: refDate)!
+        let firstOnDate = Calendar.gregorianCalendar.date(bySetting: sut.kind.component, value: sorted.first!, of: refDate)!
+        let lastOnDate = Calendar.gregorianCalendar.date(bySetting: sut.kind.component, value: sorted.last!, of: refDate)!
         let start = sut._generator(firstOnDate, .on)!.start
         let end = sut._generator(lastOnDate, .on)!.end
         

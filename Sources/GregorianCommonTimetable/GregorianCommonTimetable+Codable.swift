@@ -13,6 +13,7 @@ extension GregorianCommonTimetable: Codable
 {
     fileprivate enum Base: String, Codable {
         case months
+        case days
         case weekdays
         case hours
         
@@ -20,6 +21,8 @@ extension GregorianCommonTimetable: Codable
             switch self {
             case .months:
                 return .monthlyBased
+            case .days:
+                return .dailyBased
             case .weekdays:
                 return .weekdayBased
             case .hours:
@@ -31,6 +34,8 @@ extension GregorianCommonTimetable: Codable
             switch kind {
             case .monthlyBased:
                 self = .months
+            case .dailyBased:
+                self = .days
             case .weekdayBased:
                 self = .weekdays
             case .hourlyBased:
@@ -40,7 +45,7 @@ extension GregorianCommonTimetable: Codable
         
     }
     
-    fileprivate enum CodingKeys: CodingKey {
+    fileprivate enum CodingKeys: String, CodingKey {
         case base
         case schedule
     }
@@ -87,6 +92,10 @@ extension GregorianCommonTimetable: Codable
             let weekdays = try? GregorianWeekdays(strings: webInstance.schedule)
         {
             self = Self(weekdays)
+        } else if
+            let days = try? GregorianDays(strings: webInstance.schedule)
+        {
+            self = Self(days)
         } else if
             let months = try? GregorianMonths(strings: webInstance.schedule)
         {

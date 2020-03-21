@@ -272,6 +272,18 @@ final class GregorianCommonTimetableTests: XCTestCase {
         XCTAssertEqual(sut.onScheduleValues, Set(GregorianCommonTimetable.Kind.weekdayBased.rangeOfScheduleValues))
     }
     
+    func test_initFromGregorianDays() {
+        // given
+        let days = GregorianDays(arrayLiteral: .everyDay)
+        
+        // when
+        sut = GregorianCommonTimetable(days)
+        
+        // then
+        XCTAssertEqual(sut.kind, GregorianCommonTimetable.Kind.dailyBased)
+        XCTAssertEqual(sut.onScheduleValues, Set(GregorianCommonTimetable.Kind.dailyBased.rangeOfScheduleValues))
+    }
+    
     func test_initFromGregorianMonths() {
         // given
         let months = GregorianMonths(arrayLiteral: .year)
@@ -308,6 +320,18 @@ final class GregorianCommonTimetableTests: XCTestCase {
         XCTAssertEqual(sut.rawValueOfBuilder, weekdays.rawValue)
     }
     
+    func test_rawValueOfBuilder_whenKindIsDailyBased_returnsExpectedResult()
+    {
+        // given
+        let days = GregorianDays(arrayLiteral: .everyDay)
+        
+        // when
+        sut = GregorianCommonTimetable(days)
+        
+        // then
+        XCTAssertEqual(sut.rawValueOfBuilder, days.rawValue)
+    }
+    
     func test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult()
     {
         // given
@@ -342,6 +366,18 @@ final class GregorianCommonTimetableTests: XCTestCase {
         
         // then
         XCTAssertEqual(sut.onScheduleAsStrings, weekdays.baseValidMembersAsStrings)
+    }
+    
+    func test_onScheduleAsStrings_whenKindIsDailyBased_returnsExpectedResult()
+    {
+        // given
+        let days = GregorianDays(arrayLiteral: .everyDay)
+        
+        // when
+        sut = GregorianCommonTimetable(days)
+        
+        // then
+        XCTAssertEqual(sut.onScheduleAsStrings, days.baseValidMembersAsStrings)
     }
     
     func test_onScheduleAsStrings_whenKindIsMonthlyBased_returnsExpectedResult()
@@ -418,9 +454,11 @@ final class GregorianCommonTimetableTests: XCTestCase {
         ("test_initFromGregorianMonths", test_initFromGregorianMonths),
         ("test_rawValueOfBuilder_whenKindIsHourlyBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsHourlyBased_returnsExpectedResult),
         ("test_rawValueOfBuilder_whenKindIsWeekdayBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsWeekdayBased_returnsExpectedResult),
-        ("test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult),
+       ("test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult),
+       ("test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult", test_rawValueOfBuilder_whenKindIsMonthlyBased_returnsExpectedResult),
       ("test_onScheduleAsStrings_whenKindIsHourlyBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsHourlyBased_returnsExpectedResult),
       ("test_onScheduleAsStrings_whenKindIsWeekdayBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsWeekdayBased_returnsExpectedResult),
+      ("test_onScheduleAsStrings_whenKindIsDailyBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsDailyBased_returnsExpectedResult),
       ("test_onScheduleAsStrings_whenKindIsMonthlyBased_returnsExpectedResult", test_onScheduleAsStrings_whenKindIsMonthlyBased_returnsExpectedResult),
         ("test_codable", test_codable),
         

@@ -232,13 +232,13 @@ final class GCTTGeneratorTests: XCTestCase
             let dateBeforeScheduledElementStart = Date(timeInterval: -halfElementDuration, since: onElement.start)
             let dateAfterScheduledElementEnd = Date(timeInterval: halfElementDuration, since: onElement.end)
             
-            let shiftToNextOn = shiftAmountToFirstAfter(for: dateAfterScheduledElementEnd)!
+            let shiftToNextOn = shiftValue(for: dateAfterScheduledElementEnd, in: onScheduleValues, of: kind, to: .firstAfter)!
             let nextOnDate = Calendar.gregorianCalendar.date(byAdding: kind.durationComponent, value: shiftToNextOn, to: dateAfterScheduledElementEnd)!
             let expectedElementAfterOnElement = sut(nextOnDate, .on)
             
-            let shiftToPreviousOn = shiftAmountToFirstBefore(for: dateBeforeScheduledElementStart)!
+            let shiftToPreviousOn = shiftValue(for: dateBeforeScheduledElementStart, in: onScheduleValues, of: kind, to: .firstBefore)!
             let previousOnDate = Calendar.gregorianCalendar.date(byAdding: kind.durationComponent, value: shiftToPreviousOn, to: dateBeforeScheduledElementStart)!
-            let expectedElementBeforeOnElement = sut(previousOnDate, .on)!
+            let expectedElementBeforeOnElement = sut(previousOnDate, .on)
             
             // then
             XCTAssertEqual(sut(dateBeforeScheduledElementStart, .firstAfter), onElement)
@@ -257,7 +257,7 @@ final class GCTTGeneratorTests: XCTestCase
             when()
             
             var firstAfterExpectedResult: DateInterval? = nil
-            if let shift = shiftAmountToFirstAfter(for: refDate)
+            if let shift = shiftValue(for: refDate, in: onScheduleValues, of: kind, to: .firstAfter)
             {
                 let expDate = Calendar.gregorianCalendar.date(byAdding: kind.durationComponent, value: shift, to: refDate)!
                 firstAfterExpectedResult = Calendar.gregorianCalendar.dateInterval(of: kind.durationComponent, for: expDate)!
@@ -266,7 +266,7 @@ final class GCTTGeneratorTests: XCTestCase
             
             var firstBeforeExpectedResult: DateInterval? = nil
             if
-                let shift = shiftAmountToFirstBefore(for: refDate)
+                let shift = shiftValue(for: refDate, in: onScheduleValues, of: kind, to: .firstBefore)
             {
                 let expDate = Calendar.gregorianCalendar.date(byAdding: kind.durationComponent, value: shift, to: refDate)!
                 firstBeforeExpectedResult = Calendar.gregorianCalendar.dateInterval(of: kind.durationComponent, for: expDate)!

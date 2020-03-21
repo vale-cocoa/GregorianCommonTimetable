@@ -10,6 +10,158 @@ import Foundation
 import Schedule
 import VDLCalendarUtilities
 
+// MARK: - Helpers for scheduleGenerator
+func shiftValue(for date: Date, in schedule: Set<Int>, of kind: GregorianCommonTimetable.Kind, to criteria: CalendarCalculationMatchingDateDirection) -> Int?
+{
+    let validRange = kind.rangeOfScheduleValues
+    guard
+        !schedule.isEmpty,
+        schedule.isSubset(of: validRange)
+        else { return nil }
+    
+    if kind == .dailyBased {
+        
+        return shiftDaysValue(from: date, in: schedule, to: criteria)
+    } else {
+        let dayValue = Calendar.gregorianCalendar.component(kind.component, from: date)
+        let increment: Int!
+        switch criteria {
+        case .on:
+            
+            return schedule.contains(dayValue) ? 0 : nil
+        case .firstBefore:
+            increment = -1
+        case .firstAfter:
+            increment = 1
+        }
+        var shift = increment!
+        while abs(shift) <= validRange.count {
+            let incremented = dayValue + shift
+            let candidate: Int!
+            if
+                increment == 1 && incremented >= validRange.upperBound
+            {
+                candidate = incremented - validRange.count
+            } else if
+                increment == -1 && incremented < validRange.lowerBound
+            {
+                candidate = incremented + validRange.count
+            } else {
+                candidate = incremented
+            }
+            
+            if schedule.contains(candidate) {
+                
+                return shift
+            }
+            shift += increment
+        }
+    }
+    
+    return nil
+}
+
+func shiftDaysValue(from date: Date, in schedule: Set<Int>, to criteria: CalendarCalculationMatchingDateDirection) -> Int?
+{
+    guard
+        !schedule.isEmpty,
+        schedule.isSubset(of: GregorianCommonTimetable.Kind.dailyBased.rangeOfScheduleValues),
+        let rangeOfDays = Calendar.gregorianCalendar.range(of: .day, in: .month, for: date)
+        else { return nil }
+    
+    let includeLastMonthDay = schedule
+        .contains(31)
+    let dayValue = Calendar.gregorianCalendar.component(.day, from: date)
+    switch criteria {
+    case .on:
+        if schedule.contains(dayValue) || (includeLastMonthDay && dayValue == rangeOfDays.last!) { return 0 }
+        
+    case .firstBefore:
+        let sorted = Array(schedule).sorted(by: <)
+        if
+            let valueBefore = sorted.last(where: { $0 < dayValue })
+        {
+            // We've got a value right before on this same month
+            return valueBefore - dayValue
+        }
+        if includeLastMonthDay {
+            // we haven't gotten a schedule value in this month
+            // right before, but we can use the last day of the previous
+            // month
+            
+            return -dayValue
+        }
+        // we'll have to look up on previous months:
+        return daysShiftToAdjacentMonth(from: date, on: schedule, criteria: .firstBefore)
+        
+    case .firstAfter:
+        let sorted = Array(schedule).sorted(by: <)
+        if
+            let valueAfter = sorted.first(where: {$0 > dayValue })
+        {
+            // we've got a possible value
+            if
+                rangeOfDays.contains(valueAfter)
+            {
+                // in case it fits in the daysRange for this month we're
+                // good to go:
+                return valueAfter - dayValue
+            } else if includeLastMonthDay && dayValue < rangeOfDays.last! {
+                // in case we are allowed to include last month day,
+                // and dayValue is not last day of this month
+                // we're good to go too by using this month's last day:
+                return rangeOfDays.last! - dayValue
+            }
+        }
+        // We have to check on next months:
+        return daysShiftToAdjacentMonth(from: date, on: schedule, criteria: .firstAfter)
+    }
+    
+    return nil
+}
+
+func daysShiftToAdjacentMonth(from baseDate: Date, on schedule: Set<Int>, criteria: CalendarCalculationMatchingDateDirection) -> Int?
+{
+    guard
+        !schedule.isEmpty,
+        schedule.isSubset(of: GregorianCommonTimetable.Kind.dailyBased.rangeOfScheduleValues),
+        criteria != .on,
+        let rangeOfDaysForBaseMonth = Calendar.gregorianCalendar.range(of: .day, in: .month, for: baseDate)
+        else { return nil }
+    
+    let baseDayValue = Calendar.gregorianCalendar.component(.day, from: baseDate)
+    let increment = criteria == .firstBefore ? -1 : 1
+    var shift: Int = criteria == .firstBefore ?  -baseDayValue : rangeOfDaysForBaseMonth.last! - baseDayValue
+    let sorted = Array(schedule)
+        .sorted(by: <)
+    var monthsShift = increment
+    while
+        abs(monthsShift) <= 12
+    {
+        guard
+        let shiftedDate = Calendar.gregorianCalendar.date(byAdding: .month, value: monthsShift, to: baseDate),
+        let daysRange = Calendar.gregorianCalendar.range(of: .day, in: .month, for: shiftedDate)
+        else { break }
+        
+        let found = criteria == .firstBefore ? sorted
+            .last(where: { daysRange.contains($0) }) : sorted
+                .first(where: { daysRange.contains($0) })
+        if
+            let found = found
+        {
+            let iterShift = criteria == .firstBefore ? -(daysRange.count - found) : found
+            shift += iterShift
+            break
+        }
+        
+        shift += daysRange.count * increment
+        monthsShift += increment
+    }
+    
+    return shift
+}
+
+// MARK: - Helpers for asyncGenerator
 func scheduleElements(for generator: @escaping Schedule.Generator, of kind: GregorianCommonTimetable.Kind, in dateInterval: DateInterval) throws -> [DateInterval]
 {
     let chuncks = chop(dateInterval: dateInterval, for: generator, of: kind)
@@ -88,7 +240,7 @@ func effectiveDateInterval(from dateInterval: DateInterval, for generator: @esca
         else { return nil }
     
     if
-        let onEndElement = generator(dateInterval.end, .firstBefore),
+        let onEndElement = generator(dateInterval.end, .on),
         onEndElement.end <= dateInterval.end
     {
         endCandidate = onEndElement.end
@@ -115,10 +267,8 @@ func chop(
     -> (firstChunk: DateInterval?, secondChunk: DateInterval?)
 {
     guard
-        let effectiveDateInterval = effectiveDateInterval(from: dateInterval, for: generator) else
-    {
-          return (nil, nil)
-    }
+        let effectiveDateInterval = effectiveDateInterval(from: dateInterval, for: generator)
+        else { return (nil, nil) }
     
     guard
         let distance = largestDistance(for: effectiveDateInterval, kindOfGenerator: kind)

@@ -59,6 +59,8 @@ final class ScheduleElementsTests: XCTestCase
                 dcToAddForEnd.hour = 23
             case .weekdayBased:
                 dcToAddForEnd.day = 6
+            case .dailyBased:
+                dcToAddForEnd.day = 27
             case .monthlyBased:
                 dcToAddForEnd.month = 11
             }
@@ -85,6 +87,8 @@ final class ScheduleElementsTests: XCTestCase
                 dcToAddForEnd.weekOfYear = 2
             case .weekdayBased:
                 dcToAddForEnd.month = 11
+            case .dailyBased:
+                dcToAddForEnd.month = 2
             case .monthlyBased:
                 dcToAddForEnd.year = 2
             }

@@ -5,6 +5,9 @@ public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(GregorianCommonTimetableTests.allTests),
         testCase(GCTTGeneratorTests.allTests),
+        testCase(ShiftValueTests.allTests),
+        testCase(ShiftDaysValueTests.allTests),
+        testCase(DaysShiftToAdjacentMonthTests.allTests),
         testCase(LargestDistanceTests.allTests),
         testCase(ChopTests.allTests),
         testCase(EffectiveDateIntervalTests.allTests),
@@ -16,6 +19,9 @@ public func allTests() -> [XCTestCaseEntry] {
         testCase(GregorianMonthsCodableWebAPITests.allTests),
         testCase(GregorianWeekdaysClampedOptionSetTests.allTests),
         testCase(GregorianWeekdaysCodableWebAPITests.allTests),
+        testCase(GregorianDaysClampedOptionSetTests.allTests),
+        testCase(GregorianDaysCodableWebAPITests.allTests),
+        
     ]
 }
 #endif

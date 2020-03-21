@@ -182,7 +182,39 @@ final class LargestDistanceTests: XCTestCase {
         XCTAssertEqual(result?.amount, expectedResult.amount)
     }
     
-    // MARK: - kind == .monthlyBased Tests
+    // MARK: - kind == .dailyBased tests
+    func test_whenKindIsDailyBased_DateIntervalDurationIsLessThanOneMonth_returnNil()
+    {
+        // given
+        let end = Date(timeInterval: -1, since: Calendar.gregorianCalendar.date(byAdding: .month, value: 1, to: refDate)!)
+        
+        // when
+        kind = .dailyBased
+        dateInterval = DateInterval(start: refDate, end: end)
+        
+        // then
+        XCTAssertNil(largestDistance(for: dateInterval, kindOfGenerator: kind))
+    }
+    
+    func test_whenKindIsDailyBased_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue()
+    {
+        // given
+        let dc = DateComponents(year: 2, month: 11, day: 30, hour: 23, minute: 59, second: 59)
+        let endDate = Calendar.gregorianCalendar.date(byAdding: dc, to: refDate)!
+        let expectedResult: (component: Calendar.Component, amount: Int) = (.year, 2)
+        
+        // when
+        kind = .dailyBased
+        dateInterval = DateInterval(start: refDate, end: endDate)
+        let result = largestDistance(for: dateInterval, kindOfGenerator: kind)
+        
+        // then
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result?.component, expectedResult.component)
+        XCTAssertEqual(result?.amount, expectedResult.amount)
+    }
+    
+    // MARK: - kind == .monthlyBased tests
     func test_whenKindIsMonthlyBased_DateIntervalDurationIsLessThanOneYear_returnsNil()
     {
         // given
@@ -226,7 +258,9 @@ final class LargestDistanceTests: XCTestCase {
         ("test_whenKindIsWeekdayBased_DateIntervalDurationIsThreeWeeks_returnsExpectedValue", test_whenKindIsWeekdayBased_DateIntervalDurationIsThreeWeeks_returnsExpectedValue),
         ("test_whenKindIsWeekdayBased_DateIntervalDurationIsLessThanOneYear_returnsExpectedValue", test_whenKindIsWeekdayBased_DateIntervalDurationIsLessThanOneYear_returnsExpectedValue),
         ("test_whenKindIsWeekdayBased_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue", test_whenKindIsWeekdayBased_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue),
-        ("test_whenKindIsMonthlyBased_DateIntervalDurationIsLessThanOneYear_returnsNil", test_whenKindIsMonthlyBased_DateIntervalDurationIsLessThanOneYear_returnsNil),
+       ("test_whenKindIsDailyBased_DateIntervalDurationIsLessThanOneMonth_returnNil", test_whenKindIsDailyBased_DateIntervalDurationIsLessThanOneMonth_returnNil),
+       ("test_whenKindIsDailyBased_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue", test_whenKindIsDailyBased_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue),
+       ("test_whenKindIsMonthlyBased_DateIntervalDurationIsLessThanOneYear_returnsNil", test_whenKindIsMonthlyBased_DateIntervalDurationIsLessThanOneYear_returnsNil),
         ("test_whenKindIsMonthly_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue", test_whenKindIsMonthly_DateIntervalDurationIsMoreThanOneYear_returnsExpectedValue),
         
     ]

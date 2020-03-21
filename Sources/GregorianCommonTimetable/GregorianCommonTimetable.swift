@@ -19,17 +19,22 @@ public struct GregorianCommonTimetable {
         /// Represents a year's months timetable
         case monthlyBased
         
+        /// Represents a timetable based on days of the month
+        case dailyBased
+        
         /// Represents a weekdays timetable
         case weekdayBased
         
         /// Represents a timetable based on hours of the day
         case hourlyBased
-    
+        
         /// The `Calendar.Component` used for the schedule.
         public var component: Calendar.Component {
             switch self {
             case .monthlyBased:
                 return .month
+            case .dailyBased:
+                return .day
             case .weekdayBased:
                 return .weekday
             case .hourlyBased:
@@ -59,6 +64,8 @@ public struct GregorianCommonTimetable {
             switch self {
             case .monthlyBased:
                 return [.year]
+            case .dailyBased:
+                return [.year, .month]
             case .weekdayBased:
                 return [.year, .month, .weekOfYear]
             case .hourlyBased:
@@ -109,93 +116,5 @@ public struct GregorianCommonTimetable {
         self.onScheduleValues = values
     }
     
-    // MARK: - Internal static methods
-    static func scheduleGenerator(kind: Kind,
-        for scheduledValues: Set<Int>
-    ) throws
-        -> Schedule.Generator
-    {
-        guard
-            scheduledValues.isSubset(of: Set(kind.rangeOfScheduleValues))
-            else { throw Error.scheduleValueOutOfRange }
-        
-        guard !scheduledValues.isEmpty else { return emptyGenerator }
-        
-        let range = kind.rangeOfScheduleValues
-        let duration = kind.durationComponent
-        let match = kind.component
-        
-        return { [range, duration, match, scheduledValues] date, direction in
-            let dateCompValue = Calendar.gregorianCalendar.component(match, from: date)
-            let increment: Int!
-            switch direction {
-            case .on:
-                return scheduledValues.contains(dateCompValue) ? Calendar.gregorianCalendar.dateInterval(of: duration, for: date) : nil
-            case .firstAfter:
-                increment = 1
-            case .firstBefore:
-                increment = -1
-            }
-            
-            var shift = increment!
-            while shift <= range.count {
-                let incremented = dateCompValue + shift
-                let candidate: Int!
-                if increment == 1 && incremented >= range.upperBound
-                {
-                    candidate = incremented - range.count
-                } else if increment == -1 && incremented < range.lowerBound
-                {
-                    candidate = incremented + range.count
-                } else {
-                    candidate = incremented
-                }
-                
-                if scheduledValues.contains(candidate) {
-                    guard
-                        let onDate = Calendar.gregorianCalendar.date(byAdding: duration, value: shift, to: date)
-                        else { return nil }
-                    
-                    return Calendar.gregorianCalendar.dateInterval(of: duration, for: onDate)
-                }
-                
-                shift += increment
-            }
-            
-            return nil
-        }
-    }
-    
-    static func scheduleAsyncGenerator(
-        kind: Kind,
-        for scheduledValues: Set<Int>
-    ) throws
-        -> Schedule.AsyncGenerator
-    {
-        let scheduleGenerator = try Self.scheduleGenerator(kind: kind, for: scheduledValues)
-        
-        guard !isEmptyGenerator(scheduleGenerator)
-            else {
-                
-                return { dateInterval, queue, completion in
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        dispatchResultCompletion(result: .success([]), queue: queue, completion: completion)
-                    }
-                }
-        }
-        
-        return { dateInterval, queue, completion in
-            DispatchQueue.global(qos: .userInitiated).async {
-                var result: Result<[DateInterval], Swift.Error>!
-                do {
-                    let elements = try scheduleElements(for: scheduleGenerator, of: kind, in: dateInterval)
-                    result = .success(elements)
-                } catch {
-                    result = .failure(error)
-                }
-                dispatchResultCompletion(result: result, queue: queue, completion: completion)
-            }
-        }
-    }
-    
 }
+

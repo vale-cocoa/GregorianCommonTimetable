@@ -27,6 +27,15 @@ extension GregorianCommonTimetable {
         self = try! Self(kind: .weekdayBased, onSchedule: builder.onScheduleValues)
     }
     
+    /// Safely initialize via `GregorianDays` instance.
+    ///
+    /// - Parameter _: An instance of `GregorianDays` type.
+    /// - Returns: An instance of `GregorianCommonTimetable` initialized
+    ///  with a `kind` value of `.dailyBased`.
+    public init(_ builder: GregorianDays) {
+        self = try! Self(kind: .dailyBased, onSchedule: builder.onScheduleValues)
+    }
+    
     /// Safely initialize via `GregorianMonths` instance.
     ///
     /// - Parameter _: An instance of `GregorianMonths` type.
@@ -56,6 +65,9 @@ extension GregorianCommonTimetable {
         case .hourlyBased:
             let hours = GregorianHoursOfDay(rawValue: rawValueOfBuilder)
             return hours.baseValidMembersAsStrings
+        case .dailyBased:
+            let days = GregorianDays(rawValue: rawValueOfBuilder)
+            return days.baseValidMembersAsStrings
         case .weekdayBased:
             let weekdays = GregorianWeekdays(rawValue: rawValueOfBuilder)
             return weekdays.baseValidMembersAsStrings

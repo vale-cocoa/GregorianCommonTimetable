@@ -74,7 +74,7 @@ final class ChopTests: XCTestCase {
         
         let dateIntervalIntersectsSameElementCases: [() -> Void] = GregorianCommonTimetable.Kind.allCases
             .map { kind in
-                let onSchedule = Set(Calendar.gregorianCalendar.maximumRange(of: kind.component)!)
+                let onSchedule = Set(kind.rangeOfScheduleValues)
                 let timetable = try! GregorianCommonTimetable(kind: kind, onSchedule: onSchedule)
                 let onElement = timetable._generator(self.refDate, .firstAfter)!
                 
@@ -87,15 +87,17 @@ final class ChopTests: XCTestCase {
         
         let dateIntervalDoesntContainAnyElementCases: [() -> Void] = GregorianCommonTimetable.Kind.allCases
             .map { kind in
-                let possibleCases = Calendar.gregorianCalendar.maximumRange(of: kind.component)!
+                let possibleCases = kind.rangeOfScheduleValues
                 let onSchedule = Set([possibleCases.lowerBound])
                 let timetable = try! GregorianCommonTimetable(kind: kind, onSchedule: onSchedule)
                 let firstAfter = timetable._generator(refDate, .firstAfter)!
                 let start = Date(timeInterval: 60, since: firstAfter.end)
+                let afterFirstAfter = timetable._generator(firstAfter.end, .firstAfter)!
+                let end = Date(timeInterval: -1, since: afterFirstAfter.start)
                 
                 return {
                     self.sut = timetable
-                    self.dateInterval = DateInterval(start: start, duration: firstAfter.duration * Double((possibleCases.count - 1)))
+                    self.dateInterval = DateInterval(start: start, end: end)
                 }
         }
         cases.append(contentsOf: dateIntervalDoesntContainAnyElementCases)
@@ -106,7 +108,8 @@ final class ChopTests: XCTestCase {
     func whenLargestDistanceReturnsNil_cases() -> [() -> Void]
     {
         
-        return GregorianCommonTimetable.Kind.allCases.map { kind in
+        return GregorianCommonTimetable.Kind.allCases
+            .map { kind in
             let fullScheduleValues = Set(Calendar.gregorianCalendar.maximumRange(of: kind.component)!)
             let timeTable = try! GregorianCommonTimetable(kind: kind, onSchedule: fullScheduleValues)
             switch kind {
@@ -119,6 +122,11 @@ final class ChopTests: XCTestCase {
                 return {
                     self.sut = timeTable
                     self.dateInterval = self.givenLessThanOneWeek()
+                }
+            case .dailyBased:
+                return {
+                    self.sut = timeTable
+                    self.dateInterval = self.givenLessThanOneMonth()
                 }
             case .monthlyBased:
                 return {
