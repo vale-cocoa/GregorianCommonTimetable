@@ -10,6 +10,7 @@ This `enum` is used to differentiate between each kind of representable timetabl
 Its cases are:
 * `.hourlyBased`: for a schedule based on hours of the day.
 * `.weekdayBased`: for a schedule based on weekdays.
+* `.dailyBased`: for a schedule based on days of the month.
 * `.monthlyBased`: for a schedule based on months of the year.
 
 This subtype offers also some useful public instance variables:
@@ -41,15 +42,35 @@ let failingWeekdayBased = try GregorianCommonTimetable(kind: .weekdayBased, onSc
 let failingMonthBased = try GregorianCommonTimetable(kind: .monthlyBased, onSchedule: [-1, 9, 13])
 
 ```
+
+## `.dailyBased` and last day of month
+Basically a `.dailyBased` schedule timetable will work as any other with one expection: including the value `31` in its schedule values. 
+This value will act as last day of month element, that is for months where their range of days doesn't reach 31st, the last day of that month will be considered on schedule. 
+```swift
+// A .dailyBased schedule which inlcudes 31st:
+let timetable = GregorianCommonTimetable(kind: .dailyBased, onSchedule: [12, 13, 31])
+
+let dateOnFebruary28thDC = DateComponents(year: 2001, month: 2, day: 28)
+let lastDayOfFeb = Calendar.gregorianCalendar.date(from: dateOnFebruary28thDC)!
+
+// returns true despite 28 is not in schedule
+timetable.contains(lastDayOfFeb)
+
+```
+
 ## Builders
 To make it easier initialization operations and storage, builder types are provided, one for kind of schedule. Convienece initializers from these types are also provided on `GregorianCommonTimetable` to obtain `Schedule` istances from them.
 
 ### `GregorianHoursOfDay`
-This type provide functionalities for creation, mangement and storage of schedules based on `.hour` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `hourlyBased`.
+This type provides functionalities for creation, mangement and storage of schedules based on `.hour` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `hourlyBased`.
 
 
 ### `GregorianWeekdays`
-This type provide functionalities for creation, management and storage of schedules based on `.weekday` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `weekdayBased`.
+This type provides functionalities for creation, management and storage of schedules based on `.weekday` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `weekdayBased`.
+
+### `GregorianDays`
+This type provides functionalities fir creatin, management and storage of schedules based on `.day` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in having its `kind` property set to `.dailyBased`.
+
 
 ### `GregorianMonths`
 This type provide functionalities for creation, management and storage of schedules based on `.month` component. Hence initializing a `GregorianCommonTimetable` from an instance of this builder will result in one having its `kind` property set to `monthlyBased`.
