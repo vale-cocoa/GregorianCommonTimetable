@@ -20,6 +20,6 @@ tests += GregorianMonthsCodableWebAPITests.allTests()
 tests += GregorianWeekdaysClampedOptionSetTests.allTests()
 tests += GregorianWeekdaysCodableWebAPITests.allTests()
 tests += GregorianDaysClampedOptionSetTests.allTests()
-tests += GregorianDaysCodableWebAPITests.allTests()
+tests += GregorianDaysWebAPITests.allTests()
 
 XCTMain(tests)

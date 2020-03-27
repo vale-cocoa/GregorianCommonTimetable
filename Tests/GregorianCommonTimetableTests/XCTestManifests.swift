@@ -20,7 +20,7 @@ public func allTests() -> [XCTestCaseEntry] {
         testCase(GregorianWeekdaysClampedOptionSetTests.allTests),
         testCase(GregorianWeekdaysCodableWebAPITests.allTests),
         testCase(GregorianDaysClampedOptionSetTests.allTests),
-        testCase(GregorianDaysCodableWebAPITests.allTests),
+        testCase(GregorianDaysWebAPITests.allTests),
         
     ]
 }
