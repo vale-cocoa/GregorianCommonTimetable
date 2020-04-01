@@ -81,7 +81,7 @@ extension GregorianDays {
                 }
             
                 var nextResult = partialResult
-                nextResult.insert(shift)
+                nextResult.insert(shift + 1)
             
                 return nextResult
         }
