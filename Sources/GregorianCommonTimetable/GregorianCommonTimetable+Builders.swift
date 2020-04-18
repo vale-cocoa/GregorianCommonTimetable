@@ -78,3 +78,48 @@ extension GregorianCommonTimetable {
     }
     
 }
+
+extension GregorianCommonTimetable {
+    /// An enum where each case represents a builder Type for
+    ///  `GregorianCommonTimetable`, associated to a value of that Type.
+    public enum Builder {
+        case gregorianHoursOfDay(GregorianHoursOfDay)
+        case gregorianWeekdays(GregorianWeekdays)
+        case gregorianDays(GregorianDays)
+        case gregorianMonths(GregorianMonths)
+    }
+    
+    /// The `Builder` representing this instance.
+    public var builder: Builder {
+        switch kind {
+        case .monthlyBased:
+            return .gregorianMonths(GregorianMonths(rawValue: rawValueOfBuilder))
+        case .dailyBased:
+            return .gregorianDays(GregorianDays(rawValue: rawValueOfBuilder))
+        case .weekdayBased:
+            return .gregorianWeekdays(GregorianWeekdays(rawValue: rawValueOfBuilder))
+        case .hourlyBased:
+            return .gregorianHoursOfDay(GregorianHoursOfDay(rawValue: rawValueOfBuilder))
+        }
+    }
+    
+    /// Safely creates a new instance via a `Builder` instance.
+    ///
+    /// - parameter _: The Builder instance to use.
+    /// - Returns: A new `GregorianCommonTimetable` instance initialized
+    ///  with the values derived from the given `Builder` instance.
+    public init(_ builder: Builder)
+    {
+        switch builder {
+        case .gregorianMonths(let months):
+            self.init(months)
+        case .gregorianWeekdays(let weekdays):
+            self.init(weekdays)
+        case .gregorianDays(let days):
+            self.init(days)
+        case .gregorianHoursOfDay(let hours):
+            self.init(hours)
+        }
+    }
+    
+}

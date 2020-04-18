@@ -62,4 +62,12 @@ extension GregorianWeekdays {
                 return nextResult
         }
     }
+    
+}
+
+extension GregorianWeekdays: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.rawValue)
+    }
+    
 }
